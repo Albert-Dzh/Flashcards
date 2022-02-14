@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30" strict="no" dest="err">
+    <Properties>
+        <Property name="logDir">logs</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%T] %-5level: %logger{1} - %msg %ex{short}%n}"/>
+        </Console>
+
+        <RollingFile name="rollFile" fileName = "${logDir}/last_run.log" filePattern="${logDir}/$${date:yyyy-MM}/flashcards-%d{MM-dd}.log.gz" createOnDemand="false">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%T] %-5level %logger{1} - %msg %ex{short}%n"/>
+
+            <CronTriggeringPolicy schedule="0 18 3 * * ?" evaluateOnStartup="true"/>
+            <DefaultRolloverStrategy fileIndex="nomax" >
+                <Delete basePath="${logDir}" maxDepth="2" testMode="false">
+                    <IfFileName glob="*/flashcards-*.log.gz" />
+                    <IfLastModified age="30d" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="Flashcards.Flashcard" level="DEBUG">
+            <AppenderRef ref="rollFile"/>
+        </Logger>
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
